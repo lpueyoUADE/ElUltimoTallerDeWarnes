@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03c36432a0b48584d947b27579a7ab13, type: 3}
+  m_Name: Fiat147Level2
+  m_EditorClassIdentifier: 
+  m_Width: 1.9
+  m_Height: 0.75
+  m_Length: 3.4
+  m_WheelsPaddingX: 0.06
+  m_WheelsPaddingZ: 0.12
+  m_ChassiMass: 60
+  m_TireMass: 1
+  m_SpringRestLength: 0.8
+  m_SpringStrength: 1200
+  m_SpringDamper: 75
+  m_AcceleratePower: 250
+  m_BrakesPower: 0.2
+  m_MaxSpeed: 40
+  m_MaxReverseSpeed: 12
+  m_SteerAngle: 15
+  m_FrontWheelsGripFactor: 0.7
+  m_RearWheelsGripFactor: 0.8
+  m_AirResistance: 5
