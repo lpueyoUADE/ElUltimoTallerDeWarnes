@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace EstructurasDeDatos.Grafo
 {
@@ -194,6 +195,26 @@ namespace EstructurasDeDatos.Grafo
                 }
                 Console.WriteLine();
             }
+        }
+
+        public string PrintGraphUnity()
+        {
+            string retorno = "";
+            retorno += "Vertices: \n";
+            foreach (var vertex in vertices.GetRange(0, count)) // Solo itera hasta count
+            {
+                retorno += vertex.ToString() + "\n";
+                retorno += "Neighbors: \n";
+                var neighbors = GetNeighbors(vertex);
+                foreach (var neighbor in neighbors)
+                {
+                    int weight = GetEdgeWeight(vertex, neighbor);
+                    retorno += $"- {neighbor} (Weight: {weight})";
+                }
+                retorno += "\n";
+            }
+
+            return retorno;
         }
     }
 }
