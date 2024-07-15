@@ -4,14 +4,19 @@ using UnityEngine;
 
 public class HoverController : MonoBehaviour
 {
+
+
+
     public float amplitude = 0.5f; // La altura del movimiento
     public float frequency = 1f; // La velocidad del movimiento
 
     private Vector3 startPosition;
+    private AudioSource audioSource;
 
     void Start()
     {
         startPosition = transform.position; // Guarda la posición inicial
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -21,6 +26,7 @@ public class HoverController : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+        AudioSource.PlayClipAtPoint(audioSource.clip, startPosition);
         GameManagerCity.Instance.Checkpoint(name);
     }
 }

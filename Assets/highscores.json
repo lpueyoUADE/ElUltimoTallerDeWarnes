@@ -1,0 +1,16 @@
+{
+    "highScores": [
+        {
+            "puntos": 30,
+            "fecha": "2024-07-15 18:46:49",
+            "auto": "Fiat147",
+            "mapa": "Ciudad 1"
+        },
+        {
+            "puntos": 10,
+            "fecha": "2024-07-15 18:47:59",
+            "auto": "FiatUno",
+            "mapa": "Ciudad 1"
+        }
+    ]
+}

@@ -8,15 +8,16 @@ using UnityEngine.UIElements;
 public class NodoController : MonoBehaviour, IComparable<NodoController>
 
 {
-
+    [Header("Grafo")]
     [SerializeField] List<NodoController> vecinos;
     [SerializeField] GameObject destinationOrb;
     [SerializeField] GameObject pathOrb;
+
     public List<NodoController> Vecinos { get => vecinos; set => vecinos = value; }
 
     private void Start()
     {
-        SetAsInactive();
+        // SetAsInactive();
     }
 
     public void SetAsDestination()

@@ -211,19 +211,6 @@ namespace EstructurasDeDatos.Lista
 
         public void Ordenar(bool desc = true)
         {
-            /*
-             * List<T> lista = ToList();
-            
-            lista.Sort(); // TODO Eventualmente cambiar esta cochinada por un QuickSort caserito.
-
-            if (desc)
-            {
-                lista.Reverse();
-            }
-
-            ToLSE(lista);
-            */
-
             QuickSort(desc);
         }
 

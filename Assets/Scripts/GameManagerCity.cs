@@ -8,25 +8,46 @@ using System.Linq;
 using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameManagerCity : MonoBehaviour
 {
+    [Header("Gameplay")]
     [SerializeField] Transform mapPointsContainer;
     [SerializeField] ArrowController arrow;
     [SerializeField] AudioClip pickupSound;
+    public Transform car;
+
+    [Header("Car Selection")]
+    public List<CarController> carOptions;
+    private int carSelectedId;
+
+    [Header("Cameras")]
+    public CameraController cameraController;
+    public MinimapCameraController miniMapCameraController;
+
+
+    [Header("UI")]
+    [SerializeField] GameObject GameOverPanel;
+    public TMP_Text puntosText;
+    [SerializeField] TMP_Text GameOverPuntosText;
+    [SerializeField] TMP_Text timerText;
+
+    [Header("Timer")]
+    public float timerDuration;
+    private float currentTime;
+    public bool IsTimerActive { get => currentTime > 0; }
 
     private GrafoEstatico<NodoController> grafo;
     private List<NodoController> mapPointsList;
     private AVL<DistanciaNodo> nodosByDistancia;
 
-    public Transform car;
-
     public static GameManagerCity Instance { get; private set; }
+    
 
     private List<NodoController> camino;
 
-    public TMP_Text puntosText;
     private int points;
     private int count;
 
@@ -41,7 +62,7 @@ public class GameManagerCity : MonoBehaviour
         {
             // Si esta es la primera instancia, asígnala y marca este objeto para no destruirlo al cargar una nueva escena.
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            // DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -78,9 +99,58 @@ public class GameManagerCity : MonoBehaviour
         puntosText.text = this.points.ToString();
     }
 
+    private void ShowGameOver()
+    {
+        GameOverPanel.SetActive(true);
+        GameOverPuntosText.text = puntosText.text;
+
+        HighScoresController.WriteData(new HighScoresController.HighScoreRegister
+        {
+            puntos = points,
+            fecha = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+            auto = car.name,
+            mapa = "Ciudad 1"
+        });
+
+        Time.timeScale = 0;
+    }
+
+    private void HideGameOver()
+    {
+        GameOverPanel.SetActive(false);
+    }
+
+    void SelectCar()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            carSelectedId = (carSelectedId + 1) % carOptions.Count;
+            SetCar(carSelectedId);
+        }
+    }
+
+    void SetCar(int id)
+    {
+        foreach (CarController car in carOptions)
+        {
+            car.SetActive(false);
+        }
+
+        car = carOptions[id].transform;
+        cameraController.FollowTarget = carOptions[id];
+        miniMapCameraController.target = carOptions[id].gameObject;
+        carOptions[id].SetActive(true);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        carSelectedId = 0;
+        SetCar(carSelectedId);
+        currentTime = timerDuration;
+
+        HideGameOver();
+
         points = 0;
         AddPoints(0);
 
@@ -115,13 +185,15 @@ public class GameManagerCity : MonoBehaviour
         if(count < camino.Count)
             arrow.pointAt = camino[count].transform;
 
-        if (count == camino.Count || name == camino[camino.Count - 1].name)
+             if (count == camino.Count || name == "Destination")
         {
             GeneratePath();
             AddPoints(100);
+            currentTime += 30;
         } else
         {
             AddPoints(10);
+            
         }
     }
 
@@ -153,9 +225,41 @@ public class GameManagerCity : MonoBehaviour
         arrow.pointAt = camino[0].transform;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void GoToHighScores()
     {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("HighScores");
+    }
 
+    public void GoToMainScreen()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    string FormatTime(float time)
+    {
+        time = time <= 0 ? 0 : time;
+
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = Mathf.FloorToInt(time % 60);
+        return string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    private void Update()
+    {
+        if (!IsTimerActive)
+            return;
+
+        currentTime -= Time.deltaTime;
+
+        timerText.text = FormatTime(currentTime);
+
+        SelectCar();
+
+        if (currentTime <= 0)
+        {
+            ShowGameOver();
+        }
     }
 }

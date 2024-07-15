@@ -604,6 +604,11 @@ public class CarController : MonoBehaviour
         m_Rigidbody.AddForce(m_BoxCollider.size.magnitude * m_Settings.AirResistance * -m_Rigidbody.velocity);
     }
 
+    public void SetActive(bool active)
+    {
+        gameObject.SetActive(active);
+    }
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {

@@ -7,23 +7,21 @@ using UnityEngine.UIElements;
 public class CameraController : MonoBehaviour
 {
     [Header("Camera Settings")]
-    [SerializeField] private float m_Distance = 10.0f;
-    [SerializeField] private float m_Height = 5.0f;
-    [SerializeField] private float m_HeightDamping = 2.0f;
-    [SerializeField] private float m_RotationDamping = 3.0f;
-    [SerializeField] private float m_MoveSpeed = 1.0f;
-    [SerializeField] private float m_NormalFov = 60.0f;
-    [SerializeField] private float m_FastFov = 90.0f;
-    [SerializeField] private float m_FovDamping = 0.25f;
+    [SerializeField] List<CameraSettings> cameras;
 
-    [SerializeField] private CarController FollowTarget;
+    [Header("Target")]
+    public CarController FollowTarget;
 
+    private CameraSettings selectedCamera;
+    private int selectedCameraIndex;
     private Camera mCamera;
     public float SpeedRatio { get; set; }
 
     private void Start()
     {
         mCamera = GetComponent<Camera>();
+        selectedCameraIndex = 0;
+        selectedCamera = cameras[selectedCameraIndex];
     }
 
     private void Update()
@@ -36,6 +34,11 @@ public class CameraController : MonoBehaviour
             transform.RotateAround(transform.position, Vector3.up, 360 * turnLeft * Time.deltaTime);
             return;
         }
+
+        if(Input.GetKeyDown(KeyCode.C)) {
+            selectedCameraIndex = (selectedCameraIndex + 1) % cameras.Count;
+            selectedCamera = cameras[selectedCameraIndex];
+        }
     }
     public void LateUpdate()
     {
@@ -46,26 +49,26 @@ public class CameraController : MonoBehaviour
 
 
         float wantedRotationAngle = FollowTarget.transform.eulerAngles.y;
-        float wantedHeight = FollowTarget.transform.position.y + m_Height;
+        float wantedHeight = FollowTarget.transform.position.y + selectedCamera.Height;
         float currentRotationAngle = transform.eulerAngles.y;
         float currentHeight = transform.position.y;
 
-        currentRotationAngle = Mathf.LerpAngle(currentRotationAngle, wantedRotationAngle, m_RotationDamping * Time.deltaTime);
+        currentRotationAngle = Mathf.LerpAngle(currentRotationAngle, wantedRotationAngle, selectedCamera.RotationDamping * Time.deltaTime);
 
-        currentHeight = Mathf.Lerp(currentHeight, wantedHeight, m_HeightDamping * Time.deltaTime);
+        currentHeight = Mathf.Lerp(currentHeight, wantedHeight, selectedCamera.HeightDamping * Time.deltaTime);
 
         Quaternion currentRotation = Quaternion.Euler(0.0f, currentRotationAngle, 0.0f);
 
         Vector3 desiredPosition = FollowTarget.transform.position;
-        desiredPosition -= currentRotation * Vector3.forward * m_Distance;
+        desiredPosition -= currentRotation * Vector3.forward * selectedCamera.Distance;
         desiredPosition.y = currentHeight;
 
-        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * m_MoveSpeed);
+        transform.position = Vector3.MoveTowards(transform.position, desiredPosition, Time.deltaTime * selectedCamera.MoveSpeed);
 
         transform.LookAt(FollowTarget.transform);
 
         const float FAST_SPEED_RATIO = 0.9f;
-        float targetFov = SpeedRatio > FAST_SPEED_RATIO ? m_FastFov : m_NormalFov;
-        mCamera.fieldOfView = Mathf.Lerp(mCamera.fieldOfView, targetFov, Time.deltaTime * m_FovDamping);
+        float targetFov = SpeedRatio > FAST_SPEED_RATIO ? selectedCamera.FastFov : selectedCamera.NormalFov;
+        mCamera.fieldOfView = Mathf.Lerp(mCamera.fieldOfView, targetFov, Time.deltaTime * selectedCamera.FovDamping);
     }
 }
